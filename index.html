@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro-Curso: Evolución de las Redes Móviles 1G</title>
+    
+    <!-- Tailwind CSS para diseño moderno y estructurado -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js para el gráfico pentagonal -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #2e1030; /* Morado oscuro profundo */
+            color: #fae8ff; /* fuchsia-50 */
+        }
+        
+        /* Personalización de la barra de desplazamiento */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #4a044e; }
+        ::-webkit-scrollbar-thumb { background: #ec4899; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #db2777; }
+
+        /* Efecto Glassmorphism para el Navbar */
+        .glass-nav {
+            background: rgba(46, 16, 48, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Línea de tiempo CSS pura */
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: #ec4899;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-radius: 2px;
+        }
+        .timeline-item { position: relative; background-color: inherit; width: 50%; }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: #2e1030;
+            border: 4px solid #ec4899;
+            top: 20px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .left-timeline { left: 0; padding-right: 40px; }
+        .right-timeline { left: 50%; padding-left: 40px; }
+        .right-timeline::after { left: -10px; }
+        
+        @media screen and (max-width: 768px) {
+            .timeline-container::after { left: 31px; }
+            .timeline-item { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .timeline-item::after { left: 21px; }
+            .left-timeline { left: 0; }
+            .right-timeline { left: 0; }
+        }
+
+        /* Efectos Hover Extras */
+        .hover-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.3);
+            border-color: #ec4899;
+        }
+
+        /* Anclas (offsets para que el navbar no tape el título) */
+        section { scroll-margin-top: 80px; }
+        
+        /* Tooltip simple para enlaces de glosario */
+        .glosario-link {
+            color: #f472b6;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            transition: color 0.2s;
+        }
+        .glosario-link:hover { color: #fbcfe8; }
+    </style>
+</head>
+<body class="antialiased selection:bg-pink-500 selection:text-white">
+
+    <!-- Navegación Fija -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <i class="fa-solid fa-tower-cell text-pink-500 text-2xl"></i>
+                    <span class="font-bold text-xl text-white tracking-wider">Móvil<span class="text-pink-500">1G</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#intro" class="hover:text-pink-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Inicio</a>
+                        <a href="#timeline" class="hover:text-pink-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Cronología</a>
+                        <a href="#tech" class="hover:text-pink-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Tecnología</a>
+                        <a href="#standards" class="hover:text-pink-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Estándares</a>
+                        <a href="#comparison" class="hover:text-pink-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Comparación</a>
+                        <a href="#problems" class="hover:text-pink-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Problemas</a>
+                        <a href="#glossary" class="bg-pink-600 hover:bg-pink-500 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"><i class="fa-solid fa-book mr-1"></i> Glosario</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Encabezado / Hero Section -->
+    <header class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden border-b border-fuchsia-900">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1520869562399-e772f042f422?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#2e1030] to-transparent"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <span class="text-pink-500 font-semibold tracking-wider uppercase text-sm mb-4 block">Micro-Curso Interactivo Universitario</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6">
+                El Amanecer de la Era Móvil: <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-orange-400">AMPS, NMT y ETACS</span>
+            </h1>
+            <p class="mt-4 max-w-2xl text-xl text-fuchsia-200 mx-auto mb-10">
+                Un análisis profundo sobre la primera generación (1G) de redes celulares. Descubre cómo la voz analógica sentó las bases del mundo hiperconectado actual.
+            </p>
+            <a href="#intro" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 md:py-4 md:text-lg md:px-10 transition-all transform hover:scale-105 shadow-lg shadow-pink-500/30">
+                Iniciar Módulo <i class="fa-solid fa-arrow-down ml-2"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Sección: Introducción -->
+    <section id="intro" class="py-20 bg-fuchsia-950 border-b border-fuchsia-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:flex lg:items-center lg:justify-between gap-12">
+                <div class="lg:w-1/2">
+                    <h2 class="text-3xl font-bold text-white mb-6 border-l-4 border-pink-500 pl-4">¿Qué fue la Generación 1G?</h2>
+                    <p class="text-lg text-fuchsia-200 mb-4 leading-relaxed">
+                        La primera generación de telefonía móvil (1G) marca el nacimiento de las redes de comunicación celular a nivel comercial. Introducidas a finales de la década de 1970 y proliferadas en los años 80, estas redes fueron revolucionarias, aunque estaban limitadas exclusivamente a la transmisión de voz mediante una <a href="#def-analogica" class="glosario-link" title="Ir a la definición">señal analógica</a>.
+                    </p>
+                    <p class="text-lg text-fuchsia-200 mb-6 leading-relaxed">
+                        A diferencia de los engorrosos sistemas de radioteléfono móviles pre-celulares (0G) que usaban una antena central de alta potencia, las redes 1G implementaron el verdadero <strong>concepto celular</strong>. Esto permitía la reutilización de frecuencias dividiendo el territorio en "células", coordinadas por una central de <a href="#def-conmutacion" class="glosario-link" title="Ir a la definición">conmutación de circuitos</a>.
+                    </p>
+                    <div class="bg-pink-900/30 border border-pink-800 rounded-lg p-5">
+                        <h4 class="font-bold text-pink-400 mb-2"><i class="fa-solid fa-lightbulb"></i> Importancia Histórica</h4>
+                        <p class="text-sm text-fuchsia-200">El 1G validó que existía un mercado masivo para la telefonía verdaderamente móvil. El legendario teléfono <em>Motorola DynaTAC 8000X</em> (el "ladrillo") fue el icono de esta era, costando casi $4,000 USD en 1983.</p>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 mt-10 lg:mt-0">
+                  <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-fuchsia-800 hover-card">
+    
+    <iframe 
+        class="w-full h-64 md:h-80 object-cover"
+        src="https://www.youtube.com/embed/lKZSAzVXzdw?si=j2V2naqepCJqwxXK"
+        title="Video redes 1G"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+    </iframe>
+
+    <div class="absolute bottom-0 left-0 right-0 bg-black/70 p-4 backdrop-blur-sm">
+                            <p class="text-sm text-gray-300"><i class="fa-solid fa-camera mr-2"></i>El video muestra el funcionamiento de los primeros teléfonos móviles de la tecnología 1G, destacando cómo utilizaban señales analógicas para transmitir voz, sus limitaciones en calidad y seguridad, y su importancia como base para la evolución hacia redes más avanzadas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Línea de Tiempo -->
+    <section id="timeline" class="py-20 bg-purple-900/40 border-b border-fuchsia-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-12 text-center">Evolución Histórica de los Estándares</h2>
+            
+            <div class="relative timeline-container max-w-4xl mx-auto">
+                <!-- Item 1 -->
+                <div class="timeline-item left-timeline mb-10">
+                    <div class="bg-fuchsia-950 p-6 rounded-xl border border-fuchsia-800 hover-card">
+                        <h3 class="font-bold text-pink-400 text-xl mb-1">1979 - El Primer Sistema (NTT)</h3>
+                        <p class="text-sm text-fuchsia-400 mb-2">Tokio, Japón</p>
+                        <p class="text-fuchsia-200 text-sm">NTT lanza la primera red celular comercial del mundo, cubriendo inicialmente los 23 barrios especiales de Tokio. Marcó el inicio de la era 1G.</p>
+                    </div>
+                </div>
+                
+                <!-- Item 2 -->
+                <div class="timeline-item right-timeline mb-10">
+                    <div class="bg-fuchsia-950 p-6 rounded-xl border border-fuchsia-800 hover-card">
+                        <h3 class="font-bold text-purple-400 text-xl mb-1">1981 - NMT (Nordic Mobile Telephone)</h3>
+                        <p class="text-sm text-fuchsia-400 mb-2">Europa del Norte</p>
+                        <p class="text-fuchsia-200 text-sm">Suecia, Noruega, Dinamarca y Finlandia lanzan NMT. Fue revolucionario porque fue el primer sistema en el mundo en soportar <strong>roaming internacional</strong>.</p>
+                        <a href="#std-nmt" class="mt-3 inline-block text-xs text-pink-400 hover:text-white transition"><i class="fa-solid fa-arrow-right"></i> Ver detalles de NMT</a>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="timeline-item left-timeline mb-10">
+                    <div class="bg-fuchsia-950 p-6 rounded-xl border border-fuchsia-800 hover-card">
+                        <h3 class="font-bold text-pink-400 text-xl mb-1">1983 - AMPS (Advanced Mobile Phone System)</h3>
+                        <p class="text-sm text-fuchsia-400 mb-2">Estados Unidos (AT&T/Bell Labs)</p>
+                        <p class="text-fuchsia-200 text-sm">Se lanza comercialmente en Chicago. Operaba en la banda de 800 MHz y se convirtió en el estándar dominante en las Américas.</p>
+                        <a href="#std-amps" class="mt-3 inline-block text-xs text-pink-400 hover:text-white transition"><i class="fa-solid fa-arrow-right"></i> Ver arquitectura AMPS</a>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="timeline-item right-timeline mb-10">
+                    <div class="bg-fuchsia-950 p-6 rounded-xl border border-fuchsia-800 hover-card">
+                        <h3 class="font-bold text-orange-400 text-xl mb-1">1985 - ETACS</h3>
+                        <p class="text-sm text-fuchsia-400 mb-2">Europa (Reino Unido liderando)</p>
+                        <p class="text-fuchsia-200 text-sm">El Sistema de Comunicación de Acceso Total (TACS) y su versión extendida (ETACS) se introducen como una evolución europea basada en la tecnología de AMPS.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Tecnología y Arquitectura -->
+    <section id="tech" class="py-20 bg-fuchsia-950 border-b border-fuchsia-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Tecnología y Arquitectura Base</h2>
+                <p class="text-lg text-fuchsia-300 max-w-3xl mx-auto">Comprender 1G requiere entender tres pilares fundamentales que dictaban su funcionamiento electromagnético y lógico.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <!-- Pilar 1 -->
+                <div class="bg-purple-900/60 rounded-xl p-6 border border-fuchsia-800 hover-card relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-wave-square text-6xl text-pink-200"></i></div>
+                    <div class="w-12 h-12 bg-pink-600/20 rounded-lg flex items-center justify-center mb-4 border border-pink-500/30">
+                        <i class="fa-solid fa-walkie-talkie text-pink-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Voz Analógica</h3>
+                    <p class="text-fuchsia-300 text-sm mb-4">A diferencia del audio digital (1s y 0s), la voz se transmitía modulando continuamente una onda portadora de radio (generalmente usando Modulación de Frecuencia - FM). Esto era similar a cómo funciona una estación de radio comercial FM local.</p>
+                    <a href="https://es.wikipedia.org/wiki/Modulaci%C3%B3n_de_frecuencia" target="_blank" class="text-pink-400 text-sm hover:underline"><i class="fa-solid fa-external-link-alt text-xs"></i> Leer más sobre FM</a>
+                </div>
+
+                <!-- Pilar 2 -->
+                <div class="bg-purple-900/60 rounded-xl p-6 border border-fuchsia-800 hover-card relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-network-wired text-6xl text-purple-200"></i></div>
+                    <div class="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center mb-4 border border-purple-500/30">
+                        <i class="fa-solid fa-route text-purple-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Conmutación de Circuitos</h3>
+                    <p class="text-fuchsia-300 text-sm mb-4">Cuando hacías una llamada, la red reservaba un camino de comunicación físico y exclusivo de extremo a extremo durante toda la llamada. Era ineficiente porque el canal quedaba ocupado incluso si nadie estaba hablando en ese segundo.</p>
+                    <a href="#def-conmutacion" class="text-pink-400 text-sm hover:underline"><i class="fa-solid fa-book text-xs"></i> Ver definición técnica</a>
+                </div>
+
+                <!-- Pilar 3 -->
+                <div class="bg-purple-900/60 rounded-xl p-6 border border-fuchsia-800 hover-card relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-layer-group text-6xl text-orange-200"></i></div>
+                    <div class="w-12 h-12 bg-orange-600/20 rounded-lg flex items-center justify-center mb-4 border border-orange-500/30">
+                        <i class="fa-solid fa-chart-bar text-orange-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Multiplexación FDMA</h3>
+                    <p class="text-fuchsia-300 text-sm mb-4">Acceso Múltiple por División de Frecuencia. El espectro radioeléctrico se dividía en tajadas o "canales" de frecuencia. A cada usuario se le asignaba una frecuencia de ida y otra de vuelta. 1 Canal = 1 Usuario a la vez.</p>
+                    <a href="#def-fdma" class="text-pink-400 text-sm hover:underline"><i class="fa-solid fa-book text-xs"></i> Ver definición de FDMA</a>
+                </div>
+            </div>
+
+            <!-- Diagrama SVG Arquitectura -->
+            <div class="bg-purple-900/60 rounded-xl border border-fuchsia-800 p-8 text-center hover-card">
+                <h4 class="text-white font-bold mb-6">Esquema Arquitectónico Básico (FDMA Celular)</h4>
+                <div class="flex justify-center mb-4">
+                    <!-- SVG Diagram -->
+                    <svg viewBox="0 0 800 300" class="w-full max-w-3xl h-auto" xmlns="http://www.w3.org/2000/svg">
+                        <!-- MTSO (Mobile Telephone Switching Office) -->
+                        <rect x="50" y="100" width="120" height="100" rx="10" fill="#4a044e" stroke="#ec4899" stroke-width="3"/>
+                        <text x="110" y="145" fill="#fff" font-family="Arial" font-weight="bold" font-size="16" text-anchor="middle">MTSO</text>
+                        <text x="110" y="165" fill="#fbcfe8" font-family="Arial" font-size="12" text-anchor="middle">(Central)</text>
+                        
+                        <!-- PSTN (Public Switched Telephone Network) -->
+                        <path d="M 0 150 L 50 150" stroke="#fbcfe8" stroke-width="3" stroke-dasharray="5,5"/>
+                        <text x="25" y="140" fill="#fbcfe8" font-family="Arial" font-size="12" text-anchor="middle">Hacia PSTN</text>
+
+                        <!-- Line to Base Station 1 -->
+                        <line x1="170" y1="130" x2="350" y2="80" stroke="#ec4899" stroke-width="3"/>
+                        <!-- Line to Base Station 2 -->
+                        <line x1="170" y1="170" x2="350" y2="220" stroke="#ec4899" stroke-width="3"/>
+
+                        <!-- Cell 1 (Hexagon) -->
+                        <polygon points="450,20 520,60 520,140 450,180 380,140 380,60" fill="#2e1030" stroke="#701a75" stroke-width="2"/>
+                        <!-- Base Station 1 -->
+                        <rect x="440" y="60" width="20" height="40" fill="#86198f"/>
+                        <circle cx="450" cy="50" r="10" fill="#f97316"/>
+                        <text x="450" y="120" fill="#fff" font-family="Arial" font-size="12" text-anchor="middle">Torre Celular 1</text>
+                        <text x="450" y="140" fill="#f472b6" font-family="Arial" font-size="10" text-anchor="middle">Frecuencias f1, f2, f3</text>
+
+                        <!-- Cell 2 (Hexagon) -->
+                        <polygon points="450,180 520,220 520,300 450,340 380,300 380,220" fill="#2e1030" stroke="#701a75" stroke-width="2"/>
+                        <!-- Base Station 2 -->
+                        <rect x="440" y="220" width="20" height="40" fill="#86198f"/>
+                        <circle cx="450" cy="210" r="10" fill="#f97316"/>
+                        <text x="450" y="280" fill="#fff" font-family="Arial" font-size="12" text-anchor="middle">Torre Celular 2</text>
+                        <text x="450" y="300" fill="#f472b6" font-family="Arial" font-size="10" text-anchor="middle">Frecuencias f4, f5, f6</text>
+
+                        <!-- Car/Mobile User 1 -->
+                        <rect x="650" y="70" width="40" height="20" rx="5" fill="#fbcfe8"/>
+                        <circle cx="660" cy="95" r="5" fill="#701a75"/>
+                        <circle cx="680" cy="95" r="5" fill="#701a75"/>
+                        <line x1="670" y1="70" x2="670" y2="50" stroke="#fbcfe8" stroke-width="2"/>
+                        <path d="M 520 80 Q 585 50 650 80" stroke="#c026d3" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                        <text x="585" y="60" fill="#c026d3" font-family="Arial" font-size="10" text-anchor="middle">Canal FDMA (Voz FM)</text>
+                    </svg>
+                </div>
+                <p class="text-sm text-fuchsia-300">Diagrama de la arquitectura de red. El MTSO gestionaba la conexión entre las torres y la red telefónica pública. Las células adyacentes usaban diferentes grupos de frecuencias para evitar la interferencia (reutilización de frecuencias).</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Los Grandes Estándares -->
+    <section id="standards" class="py-20 bg-purple-900/40 border-b border-fuchsia-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Los 3 Grandes Estándares 1G</h2>
+                <p class="text-lg text-fuchsia-300">A diferencia de la estandarización global que veríamos más adelante con 4G o 5G, en la era 1G el mundo estaba completamente fragmentado geográficamente.</p>
+            </div>
+
+            <div class="space-y-8">
+                <!-- AMPS -->
+                <div id="std-amps" class="bg-fuchsia-950 border-l-4 border-pink-500 rounded-r-xl p-6 lg:p-8 hover-card shadow-lg">
+                    <div class="lg:flex justify-between items-start">
+                        <div class="lg:w-2/3">
+                            <h3 class="text-2xl font-bold text-white flex items-center gap-3 mb-2">
+                                AMPS <span class="text-xs bg-pink-600 text-white px-2 py-1 rounded">América</span>
+                            </h3>
+                            <p class="text-fuchsia-400 mb-4 text-sm italic">Advanced Mobile Phone System</p>
+                            <p class="text-fuchsia-200 mb-4">Desarrollado por Bell Labs en Estados Unidos. Fue el estándar predominante en Norteamérica, América del Sur y partes de Asia. Su principal logro fue ser el primer sistema en manejar la asignación dinámica de canales y el "handoff" (pasar la llamada de una antena a otra mientras el auto se movía).</p>
+                            <ul class="text-sm text-fuchsia-300 space-y-2 mb-4">
+                                <li><strong class="text-white">Frecuencia:</strong> 800 MHz.</li>
+                                <li><strong class="text-white">Ancho de banda por canal:</strong> 30 kHz.</li>
+                                <li><strong class="text-white">Modulación:</strong> FM para voz, FSK (Digital) para la señalización de control.</li>
+                            </ul>
+                            <div class="flex gap-4 text-sm mt-4">
+                                <span class="text-pink-400"><i class="fa-solid fa-check-circle mr-1"></i>Excelente calidad de voz</span>
+                                <span class="text-orange-400"><i class="fa-solid fa-times-circle mr-1"></i>Seguridad nula (fácil de escanear)</span>
+                            </div>
+                        </div>
+                        <div class="lg:w-1/4 mt-6 lg:mt-0 bg-purple-900/60 p-4 rounded-lg border border-fuchsia-800 text-center">
+                            <img src="https://i.redd.it/7fkdr88xy2af1.png" 
+     alt="Teléfono móvil antiguo instalado en el maletero de un coche (AMPS)" 
+     class="w-full h-auto rounded-xl shadow-lg">
+                            <p class="text-xs text-fuchsia-300">Los primeros teléfonos AMPS iban instalados en el maletero de los coches debido a que requerían unos 3 vatios de potencia de transmisión.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NMT -->
+                <div id="std-nmt" class="bg-fuchsia-950 border-l-4 border-purple-500 rounded-r-xl p-6 lg:p-8 hover-card shadow-lg">
+                    <div class="lg:flex justify-between items-start">
+                        <div class="lg:w-2/3">
+                            <h3 class="text-2xl font-bold text-white flex items-center gap-3 mb-2">
+                                NMT <span class="text-xs bg-purple-600 text-white px-2 py-1 rounded">Europa Nórdica</span>
+                            </h3>
+                            <p class="text-fuchsia-400 mb-4 text-sm italic">Nordic Mobile Telephone</p>
+                            <p class="text-fuchsia-200 mb-4">Nació del esfuerzo conjunto de las administraciones de telecomunicaciones de los países nórdicos. La geografía (vastas áreas, poca densidad poblacional) dictó sus reglas. <strong>Su aportación histórica:</strong> Inventó el concepto moderno de <em>Roaming</em> (itinerancia), permitiendo usar el mismo teléfono en Suecia, Noruega y Dinamarca.</p>
+                            <ul class="text-sm text-fuchsia-300 space-y-2 mb-4">
+                                <li><strong class="text-white">Frecuencia:</strong> Inicialmente 450 MHz (ideal para largas distancias), luego 900 MHz.</li>
+                                <li><strong class="text-white">Ancho de banda por canal:</strong> 25 kHz.</li>
+                                <li><strong class="text-white">Diferencia con AMPS:</strong> Especificaciones abiertas y libres, lo que fomentó una enorme competencia de fabricantes (Nokia, Ericsson).</li>
+                            </ul>
+                        </div>
+                        <div class="lg:w-1/4 mt-6 lg:mt-0 bg-purple-900/60 p-4 rounded-lg border border-fuchsia-800 text-center">
+                            <img src="https://images.auctionet.com/thumbs/large_item_4023984_baa38effd5.jpg" 
+     alt="Teléfono móvil antiguo instalado en el maletero de un coche (AMPS)" 
+     class="w-full h-auto rounded-xl shadow-lg">
+                            <p class="text-xs text-fuchsia-300">Gracias al NMT, Europa del Norte desarrolló la industria de telecomunicaciones móviles más avanzada de los años 80 y 90.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETACS -->
+                <div id="std-etacs" class="bg-fuchsia-950 border-l-4 border-orange-500 rounded-r-xl p-6 lg:p-8 hover-card shadow-lg">
+                    <div class="lg:flex justify-between items-start">
+                        <div class="lg:w-2/3">
+                            <h3 class="text-2xl font-bold text-white flex items-center gap-3 mb-2">
+                                ETACS <span class="text-xs bg-orange-600 text-white px-2 py-1 rounded">Reino Unido / Europa</span>
+                            </h3>
+                            <p class="text-fuchsia-400 mb-4 text-sm italic">Extended Total Access Communication System</p>
+                            <p class="text-fuchsia-200 mb-4">Europa requería un sistema con mayor capacidad debido a su densidad poblacional. TACS y su versión ampliada ETACS fueron esencialmente un rediseño del sistema AMPS estadounidense, pero modificado para las bandas de radio europeas e incrementando su eficiencia espectral.</p>
+                            <ul class="text-sm text-fuchsia-300 space-y-2 mb-4">
+                                <li><strong class="text-white">Frecuencia:</strong> 900 MHz.</li>
+                                <li><strong class="text-white">Ancho de banda por canal:</strong> 25 kHz (vs 30 kHz de AMPS). Al reducir el espaciado, se obtenían más canales en el mismo bloque de espectro.</li>
+                                <li><strong class="text-white">Resultados:</strong> Mayor capacidad de usuarios simultáneos, lo que ayudó a retrasar el colapso de la red antes de la llegada del 2G.</li>
+                            </ul>
+                        </div>
+                        <div class="lg:w-1/4 mt-6 lg:mt-0 bg-purple-900/60 p-4 rounded-lg border border-fuchsia-800 text-center">
+                            <img src="https://media.licdn.com/dms/image/v2/D560BAQEw46iNE9ODCA/company-logo_200_200/company-logo_200_200/0/1732082845801/etacs_electrical_testing_calibration_services_logo?e=2147483647&v=beta&t=R_0jwmcbtEx20mI5OC0j3AVfA1djfB1WY2k5uGkC1pE" 
+     alt="Teléfono móvil antiguo instalado en el maletero de un coche (AMPS)" 
+     class="w-full h-auto rounded-xl shadow-lg">
+                            <p class="text-xs text-fuchsia-300">Fue fundamental para masificar la telefonía móvil comercial en el Reino Unido (Vodafone y Cellnet operaban estas redes).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Comparación (Gráfico y Tabla) -->
+    <section id="comparison" class="py-20 bg-fuchsia-950 border-b border-fuchsia-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-2 text-center">Análisis Comparativo</h2>
+            <p class="text-center text-fuchsia-300 mb-12">Evaluación multidimensional de las tecnologías 1G</p>
+
+            <div class="lg:flex gap-12 items-center">
+                <!-- Gráfico Pentagonal -->
+                <div class="lg:w-1/2 mb-10 lg:mb-0 bg-purple-900/60 p-6 rounded-2xl border border-fuchsia-800 shadow-xl">
+                    <h4 class="text-center text-white font-bold mb-4">Radar de Rendimiento Técnico</h4>
+                    <div class="relative w-full aspect-square max-h-[400px] mx-auto">
+                        <canvas id="pentagonChart"></canvas>
+                    </div>
+                    <p class="text-xs text-fuchsia-400 text-center mt-4">* Escala relativa de 1 a 5 basada en el desempeño de la época. Notar que todos fallan críticamente en seguridad.</p>
+                </div>
+
+                <!-- Tabla Comparativa -->
+                <div class="lg:w-1/2">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-fuchsia-200">
+                            <thead class="text-xs text-white uppercase bg-purple-900/80 border-b border-fuchsia-800">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 rounded-tl-lg">Característica</th>
+                                    <th scope="col" class="px-6 py-4 text-pink-400">AMPS</th>
+                                    <th scope="col" class="px-6 py-4 text-purple-400">NMT</th>
+                                    <th scope="col" class="px-6 py-4 text-orange-400 rounded-tr-lg">ETACS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-purple-900/40 border-b border-fuchsia-800 hover:bg-purple-900/60 transition-colors">
+                                    <th scope="row" class="px-6 py-4 font-medium text-white">Frecuencia Base</th>
+                                    <td class="px-6 py-4">800 MHz</td>
+                                    <td class="px-6 py-4">450 / 900 MHz</td>
+                                    <td class="px-6 py-4">900 MHz</td>
+                                </tr>
+                                <tr class="bg-fuchsia-950 border-b border-fuchsia-800 hover:bg-purple-900/60 transition-colors">
+                                    <th scope="row" class="px-6 py-4 font-medium text-white">Espaciado de Canal</th>
+                                    <td class="px-6 py-4">30 kHz</td>
+                                    <td class="px-6 py-4">25 kHz</td>
+                                    <td class="px-6 py-4">25 kHz</td>
+                                </tr>
+                                <tr class="bg-purple-900/40 border-b border-fuchsia-800 hover:bg-purple-900/60 transition-colors">
+                                    <th scope="row" class="px-6 py-4 font-medium text-white">Región Primaria</th>
+                                    <td class="px-6 py-4">Américas</td>
+                                    <td class="px-6 py-4">Europa Norte</td>
+                                    <td class="px-6 py-4">Reino Unido / Europa</td>
+                                </tr>
+                                <tr class="bg-fuchsia-950 border-b border-fuchsia-800 hover:bg-purple-900/60 transition-colors">
+                                    <th scope="row" class="px-6 py-4 font-medium text-white">Tipo de Señal de Voz</th>
+                                    <td class="px-6 py-4 font-bold text-pink-500">Analógica</td>
+                                    <td class="px-6 py-4 font-bold text-pink-500">Analógica</td>
+                                    <td class="px-6 py-4 font-bold text-pink-500">Analógica</td>
+                                </tr>
+                                <tr class="bg-purple-900/40 hover:bg-purple-900/60 transition-colors">
+                                    <th scope="row" class="px-6 py-4 font-medium text-white rounded-bl-lg">Innovación Clave</th>
+                                    <td class="px-6 py-4">Handoff dinámico</td>
+                                    <td class="px-6 py-4">Roaming internacional</td>
+                                    <td class="px-6 py-4 rounded-br-lg">Eficiencia espectral</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Problemas y Fin del 1G -->
+    <section id="problems" class="py-20 bg-purple-900/40 border-b border-fuchsia-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-2 text-center">El Ocaso del 1G: Las Limitaciones</h2>
+            <p class="text-center text-fuchsia-300 mb-12">A medida que los años 80 terminaban, la tecnología se enfrentó a un muro infranqueable.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Tarjeta 1 -->
+                <div class="bg-fuchsia-950 p-6 rounded-xl border-t-4 border-pink-500 hover-card shadow-lg">
+                    <i class="fa-solid fa-lock-open text-3xl text-pink-500 mb-4 block"></i>
+                    <h4 class="font-bold text-white text-lg mb-2">Falta de Seguridad</h4>
+                    <p class="text-sm text-fuchsia-300">Al ser analógica y no estar encriptada, cualquier persona con un simple escáner de radio sintonizable podía interceptar y escuchar las conversaciones de teléfonos celulares. La privacidad era nula.</p>
+                </div>
+
+                <!-- Tarjeta 2 -->
+                <div class="bg-fuchsia-950 p-6 rounded-xl border-t-4 border-orange-500 hover-card shadow-lg">
+                    <i class="fa-solid fa-users-slash text-3xl text-orange-500 mb-4 block"></i>
+                    <h4 class="font-bold text-white text-lg mb-2">Saturación del Espectro</h4>
+                    <p class="text-sm text-fuchsia-300">Al requerir un canal completo de radio por cada llamada (<a href="#def-fdma" class="glosario-link">FDMA puro</a>), las redes en ciudades grandes (como Nueva York o Londres) llegaron a su límite de capacidad rápidamente. Las llamadas no entraban.</p>
+                </div>
+
+                <!-- Tarjeta 3 -->
+                <div class="bg-fuchsia-950 p-6 rounded-xl border-t-4 border-purple-400 hover-card shadow-lg">
+                    <i class="fa-solid fa-phone-slash text-3xl text-purple-400 mb-4 block"></i>
+                    <h4 class="font-bold text-white text-lg mb-2">Calidad Variable</h4>
+                    <p class="text-sm text-fuchsia-300">Las señales analógicas sufren de atenuación e interferencia estática ("ruido" o "lluvia" en el audio). A medida que te alejabas de la torre celular, la calidad de la voz se degradaba drásticamente.</p>
+                </div>
+
+                <!-- Tarjeta 4 -->
+                <div class="bg-fuchsia-950 p-6 rounded-xl border-t-4 border-fuchsia-500 hover-card shadow-lg">
+                    <i class="fa-solid fa-ban text-3xl text-fuchsia-500 mb-4 block"></i>
+                    <h4 class="font-bold text-white text-lg mb-2">Cero Datos (Solo Voz)</h4>
+                    <p class="text-sm text-fuchsia-300">El sistema estaba diseñado puramente para transmitir ondas de sonido. No existían los mensajes de texto (SMS), ni el correo electrónico móvil, ni mucho menos el acceso a internet.</p>
+                </div>
+            </div>
+
+            <!-- Transición a 2G -->
+            <div id="transition" class="mt-16 bg-gradient-to-r from-purple-900 to-pink-900 rounded-2xl p-8 border border-pink-500/30 text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                <div class="relative z-10">
+                    <h3 class="text-2xl font-bold text-white mb-4">El Salto Cuántico: La Transición a 2G <i class="fa-solid fa-rocket text-pink-400 ml-2"></i></h3>
+                    <p class="text-lg text-fuchsia-200 max-w-3xl mx-auto mb-6">
+                        Para resolver estos problemas críticos, la industria tuvo que reinventarse. La solución no fue mejorar lo analógico, sino <strong>digitalizar</strong>. La segunda generación (2G) introdujo la codificación digital del audio, tecnologías como TDMA y CDMA, permitiendo encriptación de grado militar, envío de SMS y multiplicando exponencialmente la capacidad de usuarios en la red. Habían nacido estándares globales como <strong>GSM</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Recursos Multimedia -->
+    <section id="resources" class="py-20 bg-fuchsia-950 border-b border-fuchsia-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-10 border-l-4 border-pink-500 pl-4">Recursos Multimedia y Estudio Adicional</h2>
+            
+            <div class="lg:flex gap-8">
+                <!-- Video incrustado -->
+                <div class="lg:w-2/3">
+                    <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden shadow-2xl border border-fuchsia-800 bg-black h-0 pb-[56.25%] relative">
+                        <!-- Se usa un video genérico educacional sobre la historia de los móviles de YouTube -->
+                        <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/mr8Kvkk9ZA0?si=WRY2j9kqZkedXhaH" title="Historia de la telefonía móvil" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <p class="text-sm text-fuchsia-400 mt-4"><i class="fa-solid fa-info-circle mr-1"></i> Documental corto recomendado sobre la evolución tecnológica de los teléfonos celulares, cubriendo visualmente los gigantescos terminales 1G y la transición a la era digital.</p>
+                </div>
+                
+                <!-- Enlaces y lecturas -->
+                <div class="lg:w-1/3 mt-8 lg:mt-0">
+                    <h3 class="text-xl font-bold text-white mb-6">Lecturas Recomendadas</h3>
+                    <div class="space-y-4">
+                        <a href="https://es.wikipedia.org/wiki/Advanced_Mobile_Phone_System" target="_blank" class="block bg-purple-900/60 p-4 rounded-lg border border-fuchsia-800 hover:bg-purple-800 transition">
+                            <h4 class="text-pink-400 font-bold mb-1"><i class="fa-brands fa-wikipedia-w mr-2"></i>AMPS en Wikipedia</h4>
+                            <p class="text-xs text-fuchsia-200">Artículo técnico detallado sobre la estructura de canales en AMPS.</p>
+                        </a>
+                        <a href="https://es.wikipedia.org/wiki/Nordic_Mobile_Telephone" target="_blank" class="block bg-purple-900/60 p-4 rounded-lg border border-fuchsia-800 hover:bg-purple-800 transition">
+                            <h4 class="text-purple-400 font-bold mb-1"><i class="fa-solid fa-book-open mr-2"></i>La Historia de NMT</h4>
+                            <p class="text-xs text-fuchsia-200">Cómo los países nórdicos colaboraron para crear el primer estándar con itinerancia.</p>
+                        </a>
+                        <a href="javascript:void(0)" onclick="window.scrollTo(0, document.body.scrollHeight)" class="block bg-pink-900/50 p-4 rounded-lg border border-pink-800 hover:bg-pink-800/50 transition">
+                            <h4 class="text-white font-bold mb-1"><i class="fa-solid fa-graduation-cap mr-2"></i>Ir al Glosario Técnico</h4>
+                            <p class="text-xs text-pink-200">Revisa los conceptos técnicos clave de esta lección en la parte inferior.</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Glosario de Definiciones Técnicas -->
+    <section id="glossary" class="py-20 bg-purple-900/40 border-b border-fuchsia-900">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-2 text-center"><i class="fa-solid fa-book-bookmark text-pink-500 mr-2"></i>Glosario Técnico de la Lección</h2>
+            <p class="text-center text-fuchsia-300 mb-10">Conceptos de telecomunicaciones universitarios explicados de forma clara.</p>
+
+            <div class="space-y-6">
+                <!-- Definición 1 -->
+                <div id="def-fdma" class="bg-fuchsia-950 rounded-lg p-6 border-l-4 border-orange-500 shadow-md">
+                    <h4 class="text-xl font-bold text-white mb-2">FDMA (Acceso Múltiple por División de Frecuencia)</h4>
+                    <p class="text-fuchsia-200 text-sm leading-relaxed">
+                        Técnica de multiplexación usada en 1G. Consiste en dividir el ancho de banda total disponible en múltiples canales de radio de diferente frecuencia. A cada usuario que realiza una llamada se le asigna un par de frecuencias exclusivas (una para transmitir voz, otra para recibirla) durante todo el tiempo que dura la conexión. Esto limita severamente el número de usuarios que pueden usar la red simultáneamente.
+                    </p>
+                </div>
+
+                <!-- Definición 2 -->
+                <div id="def-conmutacion" class="bg-fuchsia-950 rounded-lg p-6 border-l-4 border-purple-500 shadow-md">
+                    <h4 class="text-xl font-bold text-white mb-2">Conmutación de Circuitos (Circuit Switching)</h4>
+                    <p class="text-fuchsia-200 text-sm leading-relaxed">
+                        Método de red en el que se establece un canal de comunicación dedicado y físico (o un circuito lógico equivalente) entre dos nodos antes de que los usuarios puedan comunicarse. En 1G, mientras hablabas, tenías un cable y una onda de radio reservada exclusivamente para ti. Contrastar con la moderna <em>conmutación de paquetes</em> (usada en Internet y 4G/5G) donde los datos se dividen y viajan por rutas dinámicas ocupando recursos solo cuando es estrictamente necesario.
+                    </p>
+                </div>
+
+                <!-- Definición 3 -->
+                <div id="def-analogica" class="bg-fuchsia-950 rounded-lg p-6 border-l-4 border-pink-500 shadow-md">
+                    <h4 class="text-xl font-bold text-white mb-2">Señal Analógica</h4>
+                    <p class="text-fuchsia-200 text-sm leading-relaxed">
+                        Una señal eléctrica que varía continua y proporcionalmente en función de una magnitud física (en este caso, las ondas de presión sonora de la voz). En 1G, el micrófono del teléfono convertía la voz en variaciones de voltaje, y este voltaje modulaba directamente la frecuencia de la onda portadora de radio (FM). Al ser una onda continua, cualquier interferencia electromagnética externa se sumaba directamente a la señal, generando "estática" o ruido de fondo irreversible en el auricular del oyente.
+                    </p>
+                </div>
+                
+                <!-- Definición 4 -->
+                <div id="def-handoff" class="bg-fuchsia-950 rounded-lg p-6 border-l-4 border-orange-400 shadow-md">
+                    <h4 class="text-xl font-bold text-white mb-2">Handoff / Handover</h4>
+                    <p class="text-fuchsia-200 text-sm leading-relaxed">
+                        Proceso automatizado vital para la telefonía celular. Ocurre cuando un dispositivo móvil se desplaza y sale del área de cobertura de una antena base (célula) e ingresa al área de otra. El sistema central (MTSO) debe transferir la llamada de una torre de radio a la siguiente, cambiándole la frecuencia de transmisión sobre la marcha sin que la llamada se corte. AMPS fue pionero en implementar esto de manera fluida.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#1a081d] py-10 border-t border-fuchsia-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
+            <div class="flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-tower-cell text-pink-500 text-xl"></i>
+                <span class="font-bold text-lg text-white">Móvil<span class="text-pink-500">1G</span></span>
+            </div>
+            <p class="text-fuchsia-400 text-sm mb-6">Desarrollado como material de estudio interactivo para redes y telecomunicaciones.</p>
+            <div class="flex space-x-6">
+                <a href="#" class="text-fuchsia-500 hover:text-white transition"><i class="fa-brands fa-github text-xl"></i></a>
+                <a href="#" class="text-fuchsia-500 hover:text-white transition"><i class="fa-brands fa-linkedin text-xl"></i></a>
+            </div>
+            <p class="text-xs text-fuchsia-600 mt-8">&copy; 2023 - Historia de las Telecomunicaciones. Código libre de uso educativo.</p>
+        </div>
+    </footer>
+
+    <!-- Botón Flotante Volver Arriba -->
+    <button id="backToTop" class="fixed bottom-8 right-8 bg-pink-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 transition-all transform scale-0 z-50 focus:outline-none" onclick="window.scrollTo(0,0)" title="Volver arriba">
+        <i class="fa-solid fa-chevron-up"></i>
+    </button>
+
+    <!-- Lógica JavaScript (Chart.js y Scroll) -->
+    <script>
+        // 1. Lógica del Botón "Volver arriba" y Navbar Effect
+        const backToTopBtn = document.getElementById('backToTop');
+        const navbar = document.querySelector('nav');
+
+        window.addEventListener('scroll', () => {
+            // Mostrar/ocultar botón top
+            if (window.scrollY > 500) {
+                backToTopBtn.classList.remove('scale-0');
+                backToTopBtn.classList.add('scale-100');
+            } else {
+                backToTopBtn.classList.remove('scale-100');
+                backToTopBtn.classList.add('scale-0');
+            }
+
+            // Efecto sombra en navbar al bajar
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+            } else {
+                navbar.classList.remove('shadow-md');
+            }
+        });
+
+        // 2. Configuración del Gráfico Pentagonal (Radar de Chart.js)
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('pentagonChart').getContext('2d');
+            
+            // Datos configurados específicamente para crear 5 ejes (pentágono)
+            const data = {
+                labels: [
+                    'Cobertura Geográfica', 
+                    'Calidad de Voz', 
+                    'Capacidad (Usuarios)', 
+                    'Avance Tecnológico', 
+                    'Seguridad / Privacidad'
+                ],
+                datasets: [
+                    {
+                        label: 'AMPS (EEUU)',
+                        data: [3.5, 4.5, 3.0, 3.5, 1.0], // Valores escala 1-5
+                        backgroundColor: 'rgba(236, 72, 153, 0.2)', // Pink
+                        borderColor: 'rgba(236, 72, 153, 1)',
+                        pointBackgroundColor: 'rgba(236, 72, 153, 1)',
+                        borderWidth: 2,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'NMT (Nórdicos)',
+                        data: [5.0, 3.5, 2.5, 4.5, 1.0], // Alta cobertura y avance (roaming), menos capacidad
+                        backgroundColor: 'rgba(168, 85, 247, 0.2)', // Purple
+                        borderColor: 'rgba(168, 85, 247, 1)',
+                        pointBackgroundColor: 'rgba(168, 85, 247, 1)',
+                        borderWidth: 2,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'ETACS (Europa)',
+                        data: [3.5, 4.0, 4.5, 4.0, 1.0], // Alta capacidad por canales de 25kHz
+                        backgroundColor: 'rgba(249, 115, 22, 0.2)', // Orange
+                        borderColor: 'rgba(249, 115, 22, 1)',
+                        pointBackgroundColor: 'rgba(249, 115, 22, 1)',
+                        borderWidth: 2,
+                        pointRadius: 4
+                    }
+                ]
+            };
+
+            const config = {
+                type: 'radar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                circular: false // Forma poligonal (pentágono)
+                            },
+                            pointLabels: {
+                                color: '#cbd5e1',
+                                font: {
+                                    family: 'Inter',
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                min: 0,
+                                max: 5,
+                                stepSize: 1,
+                                display: false // Oculta los números del eje para limpieza visual
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#cbd5e1',
+                                font: { family: 'Inter' },
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleFont: { family: 'Inter', size: 14 },
+                            bodyFont: { family: 'Inter', size: 13 },
+                            padding: 12,
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            };
+
+            // Renderizar gráfico
+            new Chart(ctx, config);
+        });
+    </script>
+</body>
+</html>
